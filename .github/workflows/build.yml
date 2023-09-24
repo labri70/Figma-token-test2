@@ -1,0 +1,49 @@
+# workflow 이름
+name: Build and Deploy
+
+on:
+  # master브랜치로 push하면 workflow 실행
+  push:
+    branches: [ "main" ]
+
+jobs:
+  # 현재 build라고 부르는 하나의 job이 존재한다.
+  build:
+    # runs-on은 job이 어떤 OS에서 실행될지 지정한다.
+    runs-on: ubuntu-latest
+
+    # steps는 작업들을 순차적으로 실행한다.
+    steps:
+      # $GITHUB_WORKSPACE에서 저장소를 체크아웃하여, 현재 job이 your 저장소에 접근할 수 있다.
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+    
+      # 패키지 설치
+      - name: Run Token Transformer
+        run: |
+            npx token-transformer ./tokens/tokens.json ./json/figmaTokens.json global && npx style-dictionary build
+            git config --global user.name "GitHub 디자인 계정 이름" 
+            git config --global user.email "GitHub 디자인 계정 이메일"
+            git add .
+            git commit -m '피그마 디자인 파일 변환'
+            git push
+        env: 
+            GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+            
+      # 빌드
+      - name: Build
+        run: npm run build
+
+      # 배포
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3.7.3
+        with:
+          #publish할 디렉터리 경로
+          publish-dir: './build'     
+          #publish할 브랜치 
+          production-branch: main
+          github-token: ${{ secrets.GITHUB_TOKEN }}
