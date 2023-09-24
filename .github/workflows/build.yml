@@ -26,8 +26,8 @@ jobs:
       - name: Run Token Transformer
         run: |
             npx token-transformer ./tokens/tokens.json ./json/figmaTokens.json global && npx style-dictionary build
-            git config --global user.name "GitHub 디자인 계정 이름" 
-            git config --global user.email "GitHub 디자인 계정 이메일"
+            git config --global user.name "labri70" 
+            git config --global user.email "labri70@naver.com"
             git add .
             git commit -m '피그마 디자인 파일 변환'
             git push
