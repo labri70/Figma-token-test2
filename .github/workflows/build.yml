@@ -20,7 +20,7 @@ jobs:
           node-version: '18.x'
       # 디자인 파일 변환 후 생성된 파일도 push해서 main 브랜치로 병합하는 PR을 생성
       - name: Run Token Transformer
-        run: |
+      - run: |
             npx token-transformer ./tokens/tokens.json ./json/figmaTokens.json && npx style-dictionary build
             git config --global user.name "labri70" 
             git config --global user.email "labri70@naver.com"
@@ -30,6 +30,8 @@ jobs:
         env: 
             GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
       - name: Create Pull Request
-        run: gh pr create -B main -H design --title '💄 디자인 토큰 업데이트' --body '디자인 토큰이 업데이트 후 변환작업을 수행했습니다.'
+      - run: gh pr create -B main -H design --title '💄 디자인 토큰 업데이트' --body '디자인 토큰이 업데이트 후 변환작업을 수행했습니다.'
         env:
             GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      - run: npm ci
+      - run: npm build-and-deploy
